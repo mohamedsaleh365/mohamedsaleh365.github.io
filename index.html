@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mohamed Saleh · Control Systems and Machine Learning</title>
+<meta name="description" content="Mohamed Saleh, researcher in control systems and machine learning. Real-time nonlinear MPC for unstable robots and energy-efficient spiking neural networks for audio-visual learning. Hannover, Germany.">
+<meta name="author" content="Mohamed Saleh">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Mohamed Saleh · Control Systems and Machine Learning">
+<meta property="og:description" content="Real-time nonlinear MPC for unstable robots and energy-efficient spiking neural networks for audio-visual learning.">
+<meta property="og:url" content="https://mohamedsaleh365.github.io/">
+<meta property="og:image" content="https://mohamedsaleh365.github.io/assets/img/nmpc-acados-vs-ipopt.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d5c63'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-size='30' fill='%23f6f3ec'%3EMS%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Mohamed Saleh",
+  "alternateName": "Muhammad Hassan",
+  "jobTitle": "Researcher, Control Systems and Machine Learning",
+  "address": {"@type": "PostalAddress", "addressLocality": "Hannover", "addressCountry": "DE"},
+  "email": "mailto:mohamed.saleh.de@outlook.com",
+  "alumniOf": {"@type": "CollegeOrUniversity", "name": "Minia University"},
+  "sameAs": [
+    "https://github.com/mohamedsaleh365",
+    "https://arxiv.org/abs/2602.00701"
+  ]
+}
+</script>
+<style>
+:root {
+  --bg: #f6f3ec;
+  --bg-2: #efebe1;
+  --surface: #fffdf8;
+  --ink: #16191d;
+  --ink-2: #464c54;
+  --ink-3: #737982;
+  --line: #ddd7ca;
+  --line-2: #e8e3d7;
+  --ctl: #0d5c63;
+  --ctl-soft: #d7e9e8;
+  --lrn: #b4541c;
+  --lrn-soft: #f6e2d2;
+  --fig-bg: #ffffff;
+  --shadow: 0 1px 2px rgba(22, 25, 29, .05), 0 8px 28px -12px rgba(22, 25, 29, .18);
+  --radius: 14px;
+  --serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1215; --bg-2: #13181c; --surface: #161c21; --ink: #e9e6df; --ink-2: #b3b6b9; --ink-3: #868b91;
+    --line: #273036; --line-2: #1e262b; --ctl: #5cc3c2; --ctl-soft: #133236; --lrn: #f08c4f; --lrn-soft: #3a2519;
+    --fig-bg: #f4f2ee; --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -12px rgba(0, 0, 0, .6); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1215; --bg-2: #13181c; --surface: #161c21; --ink: #e9e6df; --ink-2: #b3b6b9; --ink-3: #868b91;
+  --line: #273036; --line-2: #1e262b; --ctl: #5cc3c2; --ctl-soft: #133236; --lrn: #f08c4f; --lrn-soft: #3a2519;
+  --fig-bg: #f4f2ee; --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -12px rgba(0, 0, 0, .6); color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16.5px/1.65 var(--sans); font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { text-decoration-color: currentColor; }
+:focus-visible { outline: 2px solid var(--ctl); outline-offset: 3px; border-radius: 4px; }
+::selection { background: var(--ctl-soft); }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: clamp(18px, 4vw, 40px); }
+.mono { font-family: var(--mono); }
+.eyebrow {
+  font: 500 12px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3);
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; opacity: .6; }
+
+/* nav */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid transparent; transition: border-color .2s;
+}
+.nav.scrolled { border-bottom-color: var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 62px; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 600 15px/1 var(--sans); letter-spacing: -.01em; white-space: nowrap; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--ctl); color: var(--bg); font: 500 13px/1 var(--serif); letter-spacing: .02em;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-links a {
+  text-decoration: none; font-size: 14px; color: var(--ink-2); padding: 7px 11px; border-radius: 8px;
+  transition: background .15s, color .15s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--ink); background: var(--bg-2); }
+.theme-btn {
+  width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-2); display: grid; place-items: center; cursor: pointer; margin-left: 6px;
+}
+.theme-btn:hover { color: var(--ink); }
+.theme-btn svg { width: 17px; height: 17px; }
+.theme-btn .sun { display: none; }
+:root[data-theme="dark"] .theme-btn .sun { display: block; }
+:root[data-theme="dark"] .theme-btn .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-btn .sun { display: block; }
+  :root:not([data-theme="light"]) .theme-btn .moon { display: none; }
+}
+@media (max-width: 760px) { .nav-links a:not(.keep) { display: none; } }
+
+/* hero */
+.hero { padding-block: clamp(48px, 9vw, 104px) clamp(40px, 6vw, 72px); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+.status {
+  display: inline-flex; align-items: center; gap: 9px; font-size: 13px; color: var(--ink-2);
+  border: 1px solid var(--line); background: var(--surface); padding: 6px 12px 6px 10px; border-radius: 99px;
+}
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: #2f9e6b; box-shadow: 0 0 0 0 rgba(47, 158, 107, .5); animation: pulse 2.4s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 7px rgba(47, 158, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(47, 158, 107, 0); } }
+@media (prefers-reduced-motion: reduce) { .status .dot { animation: none; } }
+h1 {
+  font: 500 clamp(44px, 7.2vw, 80px)/1 var(--serif); letter-spacing: -.028em; margin: 22px 0 18px;
+  font-variation-settings: "opsz" 144;
+}
+.hero-role { font: 400 clamp(19px, 2.3vw, 23px)/1.4 var(--serif); color: var(--ink-2); margin: 0 0 22px; letter-spacing: -.005em; }
+.hero-role .c { color: var(--ctl); font-style: italic; }
+.hero-role .l { color: var(--lrn); font-style: italic; }
+.lede { color: var(--ink-2); max-width: 60ch; margin: 0 0 28px; }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 500 14.5px/1 var(--sans);
+  padding: 11px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  transition: transform .15s, border-color .15s, background .15s;
+}
+.btn:hover { transform: translateY(-1px); border-color: var(--ink-3); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+.viz {
+  position: relative; border: 1px solid var(--line); border-radius: 18px; background: var(--surface);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.viz canvas { display: block; width: 100%; height: 360px; }
+@media (max-width: 520px) { .viz canvas { height: 300px; } }
+.viz-cap {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  font: 400 11.5px/1.4 var(--mono); color: var(--ink-3); padding: 11px 16px; border-top: 1px solid var(--line-2);
+}
+.viz-cap b { font-weight: 500; }
+.viz-cap .c { color: var(--ctl); }
+.viz-cap .l { color: var(--lrn); }
+
+/* stats */
+.stats { border-block: 1px solid var(--line); background: var(--bg-2); }
+.stats .wrap { display: grid; grid-template-columns: repeat(5, 1fr); }
+.stat { padding: 26px 18px 24px; border-left: 1px solid var(--line); }
+.stat:first-child { border-left: 0; padding-left: 0; }
+.stat .n { font: 500 clamp(28px, 3.4vw, 38px)/1 var(--serif); letter-spacing: -.02em; }
+.stat .n small { font-size: .55em; color: var(--ink-3); margin-left: 2px; }
+.stat .t { font-size: 13px; color: var(--ink-2); margin-top: 8px; line-height: 1.45; }
+.stat.c .n { color: var(--ctl); }
+.stat.l .n { color: var(--lrn); }
+@media (max-width: 900px) {
+  .stats .wrap { grid-template-columns: repeat(2, 1fr); }
+  .stat, .stat:first-child { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
+  .stat:nth-child(-n+2) { border-top: 0; }
+  .stat:last-child { grid-column: 1 / -1; }
+}
+
+/* sections */
+section.block { padding-block: clamp(64px, 9vw, 112px); }
+section.block + section.block { border-top: 1px solid var(--line); }
+.sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 32px; align-items: end; margin-bottom: 44px; }
+@media (max-width: 860px) { .sec-head { grid-template-columns: 1fr; gap: 14px; } }
+h2 { font: 500 clamp(32px, 4.4vw, 48px)/1.05 var(--serif); letter-spacing: -.022em; margin: 14px 0 0; }
+.sec-head p { color: var(--ink-2); margin: 0; max-width: 58ch; }
+
+/* research */
+.pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .pillars { grid-template-columns: 1fr; } }
+.pillar {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 28px 24px;
+  position: relative; overflow: hidden;
+}
+.pillar::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--accent); }
+.pillar.c { --accent: var(--ctl); --soft: var(--ctl-soft); }
+.pillar.l { --accent: var(--lrn); --soft: var(--lrn-soft); }
+.pillar .tag { font: 500 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.pillar h3 { font: 500 25px/1.2 var(--serif); letter-spacing: -.015em; margin: 12px 0 10px; }
+.pillar p { color: var(--ink-2); margin: 0 0 16px; }
+.pillar ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.pillar li { display: flex; gap: 10px; font-size: 15px; color: var(--ink-2); }
+.pillar li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: 10px; border-radius: 2px; background: var(--accent); }
+.bridge {
+  grid-column: 1 / -1; border-radius: var(--radius); padding: 26px 28px; border: 1px dashed var(--ink-3);
+  display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center;
+  background: linear-gradient(100deg, var(--ctl-soft), transparent 45%, transparent 55%, var(--lrn-soft));
+}
+@media (max-width: 760px) { .bridge { grid-template-columns: 1fr; gap: 12px; } }
+.bridge .sym { font: 400 40px/1 var(--serif); color: var(--ink); }
+.bridge h3 { font: 500 21px/1.3 var(--serif); margin: 0 0 6px; letter-spacing: -.01em; }
+.bridge p { margin: 0; color: var(--ink-2); }
+
+/* projects */
+.project {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(24px, 4vw, 52px);
+  padding-block: 44px; border-top: 1px solid var(--line);
+}
+.project:first-of-type { border-top: 0; padding-top: 0; }
+.project.flip .p-media { order: -1; }
+@media (max-width: 900px) { .project { grid-template-columns: 1fr; } .project.flip .p-media { order: 0; } }
+.p-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font: 400 12.5px/1.2 var(--mono); color: var(--ink-3); }
+.p-meta .kind { color: var(--accent); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+.project h3 { font: 500 clamp(25px, 2.8vw, 31px)/1.15 var(--serif); letter-spacing: -.018em; margin: 14px 0 12px; }
+.project .sum { color: var(--ink-2); margin: 0 0 18px; }
+.project ul.pts { padding: 0; margin: 0 0 20px; list-style: none; display: grid; gap: 9px; }
+.project ul.pts li { position: relative; padding-left: 20px; font-size: 15px; color: var(--ink-2); line-height: 1.6; }
+.project ul.pts li::before { content: ""; position: absolute; left: 2px; top: .72em; width: 8px; height: 1.5px; background: var(--accent); }
+.project ul.pts b { color: var(--ink); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.chip {
+  font: 400 12px/1 var(--mono); padding: 6px 9px; border-radius: 6px; background: var(--bg-2);
+  border: 1px solid var(--line-2); color: var(--ink-2);
+}
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a {
+  display: inline-flex; align-items: center; gap: 7px; font: 500 13.5px/1 var(--sans); text-decoration: none;
+  padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface);
+  transition: border-color .15s, color .15s;
+}
+.links a:hover { border-color: var(--accent); color: var(--accent); }
+.links svg { width: 15px; height: 15px; }
+.project.c { --accent: var(--ctl); }
+.project.l { --accent: var(--lrn); }
+.project.x { --accent: #6b5bb5; }
+:root[data-theme="dark"] .project.x { --accent: #a99bf0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .project.x { --accent: #a99bf0; } }
+
+.figure {
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); overflow: hidden;
+}
+.fig-tabs { display: flex; gap: 2px; padding: 6px; border-bottom: 1px solid var(--line-2); overflow-x: auto; scrollbar-width: none; }
+.fig-tabs button {
+  flex: none; font: 500 12.5px/1 var(--sans); color: var(--ink-3); background: none; border: 0; cursor: pointer;
+  padding: 9px 12px; border-radius: 7px;
+}
+.fig-tabs button:hover { color: var(--ink); }
+.fig-tabs button[aria-selected="true"] { background: var(--bg-2); color: var(--ink); }
+.fig-panel { background: var(--fig-bg); }
+.fig-panel img { width: 100%; cursor: zoom-in; }
+.fig-cap { font-size: 13px; color: var(--ink-3); padding: 12px 16px 14px; border-top: 1px solid var(--line-2); line-height: 1.55; }
+.fig-cap b { color: var(--ink-2); font-weight: 500; }
+
+.video-card {
+  display: grid; grid-template-columns: 148px 1fr; gap: 14px; align-items: center; text-decoration: none;
+  margin-top: 14px; padding: 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+  transition: border-color .15s;
+}
+.video-card:hover { border-color: var(--accent); }
+.video-card .thumb { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 16 / 9; background: #000; }
+.video-card .thumb img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+.video-card .thumb::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: translate(-35%, -50%);
+  border-style: solid; border-width: 9px 0 9px 15px; border-color: transparent transparent transparent #fff;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .6));
+}
+.video-card strong { display: block; font-size: 14.5px; font-weight: 600; }
+.video-card span { font-size: 13px; color: var(--ink-3); }
+
+/* results bars for SNNergy */
+.results { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 24px 18px; }
+.results h4 { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 20px; }
+.bar-group { margin-bottom: 20px; }
+.bar-group .ds { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.bar-group .ds b { font-weight: 600; font-size: 15px; }
+.bar-group .ds span { font: 400 12px/1 var(--mono); color: var(--ink-3); }
+.bar { display: grid; grid-template-columns: 112px 1fr 58px; gap: 10px; align-items: center; margin-top: 6px; font-size: 12.5px; }
+.bar .who { color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .track { height: 10px; border-radius: 99px; background: var(--bg-2); overflow: hidden; }
+.bar .fill { display: block; height: 100%; border-radius: 99px; background: var(--ink-3); width: var(--w); opacity: .55; transform-origin: left; }
+.bar.me .fill { background: var(--lrn); opacity: 1; }
+.bar.me .who { color: var(--ink); font-weight: 600; }
+.bar .v { font: 500 12.5px/1 var(--mono); text-align: right; }
+.bar.me .v { color: var(--lrn); }
+.results .note { font-size: 12.5px; color: var(--ink-3); margin: 6px 0 0; border-top: 1px solid var(--line-2); padding-top: 12px; line-height: 1.55; }
+.cmqka {
+  margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px;
+  display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center;
+}
+.cmqka .cx { font: 500 22px/1 var(--mono); color: var(--lrn); white-space: nowrap; }
+.cmqka .cx s { color: var(--ink-3); text-decoration-thickness: 1.5px; font-weight: 400; margin-right: 8px; }
+.cmqka p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+
+.minor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 12px; }
+@media (max-width: 760px) { .minor-grid { grid-template-columns: 1fr; } }
+.minor { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.minor h4 { font: 500 20px/1.25 var(--serif); margin: 10px 0 8px; letter-spacing: -.01em; }
+.minor p { font-size: 14.5px; color: var(--ink-2); margin: 0 0 14px; }
+
+/* publications */
+.pubs { display: grid; gap: 14px; }
+.pub {
+  display: grid; grid-template-columns: 92px 1fr; gap: 22px; padding: 24px; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--line);
+}
+@media (max-width: 620px) { .pub { grid-template-columns: 1fr; gap: 8px; } }
+.pub .yr { font: 500 26px/1 var(--serif); color: var(--ink-3); }
+.pub .pt { font: 500 19px/1.35 var(--serif); letter-spacing: -.008em; margin: 0 0 6px; }
+.pub .au { font-size: 14.5px; color: var(--ink-2); margin: 0 0 4px; }
+.pub .au b { color: var(--ink); font-weight: 600; }
+.pub .ve { font-size: 14px; color: var(--ink-3); font-style: italic; margin: 0 0 14px; }
+.pub .fn { font-size: 12.5px; color: var(--ink-3); margin: -6px 0 14px; }
+.badge {
+  display: inline-block; font: 500 11px/1 var(--mono); letter-spacing: .05em; text-transform: uppercase;
+  padding: 5px 7px; border-radius: 5px; margin-left: 8px; vertical-align: 3px;
+}
+.badge.rev { background: var(--lrn-soft); color: var(--lrn); }
+.badge.pub-ok { background: var(--ctl-soft); color: var(--ctl); }
+.pub .links a { --accent: var(--ctl); }
+
+/* experience timeline */
+.two-col { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+.col-title { font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 22px; }
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 1px; background: var(--line); }
+.timeline li { position: relative; padding: 0 0 34px 34px; }
+.timeline li:last-child { padding-bottom: 0; }
+.timeline li::before {
+  content: ""; position: absolute; left: 0; top: 7px; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--dot, var(--ink-3));
+}
+.timeline .when { font: 400 12.5px/1 var(--mono); color: var(--ink-3); }
+.timeline h4 { font: 600 17px/1.35 var(--sans); margin: 8px 0 2px; letter-spacing: -.01em; }
+.timeline .org { font-size: 14.5px; color: var(--ink-2); margin: 0 0 10px; }
+.timeline ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14.5px; display: grid; gap: 5px; }
+.timeline ul li { padding: 0; }
+.timeline ul li::before { display: none; }
+.edu { display: grid; gap: 14px; margin-bottom: 36px; }
+.edu-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; }
+.edu-card .when { font: 400 12.5px/1 var(--mono); color: var(--ink-3); }
+.edu-card h4 { font: 500 19px/1.3 var(--serif); margin: 8px 0 4px; letter-spacing: -.01em; }
+.edu-card p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+.edu-card .hl { display: inline-block; margin-top: 10px; font: 500 12px/1 var(--mono); color: var(--ctl); background: var(--ctl-soft); padding: 6px 8px; border-radius: 6px; }
+.awards { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.awards li { display: grid; grid-template-columns: 48px 1fr; gap: 12px; font-size: 14.5px; color: var(--ink-2); }
+.awards .y { font: 500 13px/1.6 var(--mono); color: var(--ink-3); }
+
+/* skills */
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 900px) { .skills { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 580px) { .skills { grid-template-columns: 1fr; } }
+.skill { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+.skill h4 { font: 600 15px/1.3 var(--sans); margin: 0 0 14px; display: flex; align-items: center; gap: 9px; }
+.skill h4 i { width: 8px; height: 8px; border-radius: 2px; background: var(--dot); }
+.skill .chips { margin: 0; }
+
+/* contact */
+.contact {
+  background: var(--ink); color: var(--bg); border-radius: 22px; padding: clamp(32px, 6vw, 64px);
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 36px; align-items: end;
+  position: relative; overflow: hidden;
+}
+.contact::after {
+  content: ""; position: absolute; right: -80px; top: -80px; width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ctl) 55%, transparent), transparent 70%); opacity: .5; pointer-events: none;
+}
+@media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
+.contact h2 { color: var(--bg); margin-top: 0; }
+.contact p { color: color-mix(in srgb, var(--bg) 72%, transparent); margin: 16px 0 0; max-width: 50ch; }
+.contact-links { display: grid; gap: 8px; position: relative; z-index: 1; }
+.contact-links a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none;
+  padding: 14px 16px; border-radius: 11px; border: 1px solid color-mix(in srgb, var(--bg) 20%, transparent);
+  font-size: 14.5px; transition: background .15s, border-color .15s;
+}
+.contact-links a:hover { background: color-mix(in srgb, var(--bg) 8%, transparent); border-color: color-mix(in srgb, var(--bg) 45%, transparent); }
+.contact-links .k { font: 400 12px/1 var(--mono); opacity: .6; }
+footer { padding-block: 32px 44px; color: var(--ink-3); font-size: 13px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+/* reveal */
+.js .rv { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
+.js .rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .js .rv { opacity: 1; transform: none; transition: none; } }
+
+/* lightbox */
+.lb { position: fixed; inset: 0; z-index: 100; background: rgba(8, 10, 12, .88); display: grid; place-items: center; padding: 24px; cursor: zoom-out; }
+.lb img { max-height: 92vh; width: auto; max-width: 100%; border-radius: 8px; background: #fff; }
+</style>
+<script>
+  if (!/[?&]shot/.test(location.search)) document.documentElement.classList.add("js");
+  try { var t = localStorage.getItem("theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="brand-mark">MS</span>Mohamed Saleh</a>
+    <div class="nav-links">
+      <a href="#research">Research</a>
+      <a href="#projects" class="keep">Projects</a>
+      <a href="#publications">Publications</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact" class="keep">Contact</a>
+      <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle color theme">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="status"><span class="dot"></span>Open to funded PhD positions</span>
+      <h1>Mohamed Saleh</h1>
+      <p class="hero-role">Researcher in <span class="c">predictive control</span> and <span class="l">spiking neural networks</span>. Hannover, Germany.</p>
+      <p class="lede">I am a researcher working at the intersection of control systems and machine learning, two disciplines I have pursued separately and am now driven to unify. My work spans real-time model predictive control for unstable robotic systems and energy-efficient spiking architectures for multimodal perception, giving me a dual fluency in optimization-grounded control theory and modern deep learning. I am drawn to new challenges and new domains, with research interests in power systems, robotics, and renewable energy.</p>
+      <div class="btns">
+        <a class="btn primary" href="mailto:mohamed.saleh.de@outlook.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>Get in touch</a>
+        <a class="btn" href="https://arxiv.org/abs/2602.00701">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>arXiv preprint</a>
+        <a class="btn" href="https://github.com/mohamedsaleh365">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.73-1.54-2.56-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>GitHub</a>
+      </div>
+    </div>
+
+    <figure class="viz" aria-label="Animated illustration: a receding-horizon prediction of a stabilized signal, and a spiking neuron population encoding the same signal">
+      <canvas id="viz"></canvas>
+      <figcaption class="viz-cap">
+        <span><b class="c">━</b> state &nbsp;<b class="c">┅</b> predicted horizon</span>
+        <span><b class="l">▮</b> LIF population code</span>
+      </figcaption>
+    </figure>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat c rv"><div class="n">143<small>×</small></div><div class="t">speedup of acados RTI over offline IPOPT on the same NMPC</div></div>
+    <div class="stat c rv"><div class="n">0.88<small>ms</small></div><div class="t">mean NMPC solve time per control step</div></div>
+    <div class="stat c rv"><div class="n">200<small>Hz</small></div><div class="t">closed-loop rate on a Raspberry Pi 4, inside a 5 ms budget</div></div>
+    <div class="stat l rv"><div class="n">O(N)</div><div class="t">cross-modal attention in CMQKA, down from O(N²)</div></div>
+    <div class="stat l rv"><div class="n">78.38<small>%</small></div><div class="t">CREMA-D accuracy, state of the art among SNNs</div></div>
+  </div>
+</div>
+
+<main>
+
+<section class="block" id="research">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Research</div>
+        <h2>Two disciplines, one question.</h2>
+      </div>
+      <p>How can a system act optimally under hard real-time and energy limits? Predictive control answers with models and constraints. Spiking networks answer with sparse, event-driven computation. I work on both, and on what happens when they meet.</p>
+    </div>
+
+    <div class="pillars">
+      <article class="pillar c rv">
+        <div class="tag">Control anchor</div>
+        <h3>Real-time predictive control for unstable robots</h3>
+        <p>End-to-end nonlinear MPC, from physics-based modeling to a solver that closes the loop on embedded hardware.</p>
+        <ul>
+          <li>Lagrangian gray-box modeling and multiple-shooting system identification</li>
+          <li>Direct multiple shooting NMPC with soft safety constraints</li>
+          <li>acados Real-Time Iteration with HPIPM, benchmarked on ARM</li>
+          <li>EKF output feedback and DMDc data-driven surrogates</li>
+        </ul>
+      </article>
+      <article class="pillar l rv">
+        <div class="tag">Learning anchor</div>
+        <h3>Energy-efficient spiking networks for multimodal perception</h3>
+        <p>Attention-based fusion that stays linear in cost, so spiking networks can go deep and hierarchical across modalities.</p>
+        <ul>
+          <li>Binary cross-modal Query-Key attention (CMQKA)</li>
+          <li>Hierarchical multi-scale audio-visual fusion</li>
+          <li>LIF neurons trained with surrogate-gradient BPTT</li>
+          <li>Neuromorphic deployment pathways (Intel Loihi)</li>
+        </ul>
+      </article>
+      <div class="bridge rv">
+        <div class="sym">⇄</div>
+        <div>
+          <h3>Where they meet</h3>
+          <p>Integrating predictive control with learned representations: learned and data-driven models inside optimal controllers, and efficient learning that respects real-time budgets. I want to take this toward power systems, robotics, and renewable energy.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="projects">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Selected projects</div>
+        <h2>Built from scratch, measured honestly.</h2>
+      </div>
+      <p>Each project runs from first principles to a verified result, with the numbers reproducible from the code.</p>
+    </div>
+
+    <!-- NMPC -->
+    <article class="project c">
+      <div class="rv">
+        <div class="p-meta"><span class="kind">Control · Robotics</span><span>M.Sc. thesis and extension · 2024–2025</span></div>
+        <h3>Nonlinear MPC for a two-wheeled self-balancing robot</h3>
+        <p class="sum">A complete control stack for an unstable inverted pendulum on wheels, rebuilt end to end in Python: identify the plant, design the controller, make it fast enough for an embedded 200 Hz loop, and close the loop under noisy, partial sensing.</p>
+        <ul class="pts">
+          <li>8-state symbolic CasADi model with DC-motor dynamics, identified by multiple-shooting prediction-error optimization to <b>88–91% tilt-prediction fit</b> on held-out data.</li>
+          <li>Corrected a spurious stable tilt mode that closed-loop identification had introduced in the thesis model.</li>
+          <li>acados RTI with HPIPM reaches a <b>143× speedup</b> over offline IPOPT (0.88 ms vs. 125 ms) with the same closed-loop behavior.</li>
+          <li>Raspberry Pi 4 benchmark at 200 Hz: <b>mean 2.58 ms, p99 3.12 ms</b>, across horizon, condensing, iteration, and integrator sweeps.</li>
+          <li>EKF output feedback with exact CasADi Jacobians matches full-state feedback for about <b>9% extra compute</b>.</li>
+          <li>The original M.Sc. thesis deployed constrained linear MPC (QP) from MATLAB/Simulink on the physical robot, with validated Sim2Real transfer.</li>
+        </ul>
+        <div class="chips"><span class="chip">CasADi</span><span class="chip">acados</span><span class="chip">HPIPM</span><span class="chip">IPOPT</span><span class="chip">EKF</span><span class="chip">DMDc</span><span class="chip">MATLAB/Simulink</span><span class="chip">Raspberry Pi</span></div>
+        <div class="links">
+          <a href="https://github.com/control-systems101/nmpc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>Code</a>
+          <a href="https://muedueg-my.sharepoint.com/:b:/g/personal/muhammad_essam_mu_edu_eg/ESSOphQX2ApEn1N4oOotgKABKByLNAQNmWKk8xV2fbcv7g?e=0YFazy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-1.5zM4 19.5A2 2 0 0 1 6 18h12"/></svg>M.Sc. thesis</a>
+        </div>
+      </div>
+      <div class="p-media rv">
+        <div class="figure" data-tabs>
+          <div class="fig-tabs" role="tablist">
+            <button role="tab" aria-selected="true" data-i="0">acados vs. IPOPT</button>
+            <button role="tab" aria-selected="false" data-i="1">Pi 4 timing</button>
+            <button role="tab" aria-selected="false" data-i="2">EKF output feedback</button>
+          </div>
+          <div class="fig-panel" data-p="0"><img src="assets/img/nmpc-acados-vs-ipopt.png" alt="Tilt, position, and input trajectories for acados RTI versus IPOPT, plus a histogram of RTI solve times centered at 0.88 ms against a 5 ms budget" loading="lazy" width="1560" height="960"></div>
+          <div class="fig-panel" data-p="1" hidden><img src="assets/img/nmpc-pi-timing.png" alt="Six-panel timing study on a Raspberry Pi: horizon sweep, solve-time distribution at N=80, RTI phase split, QP condensing, RTI iterations, and integrator steps" loading="lazy" width="1920" height="1080"></div>
+          <div class="fig-panel" data-p="2" hidden><img src="assets/img/nmpc-ekf.png" alt="EKF output-feedback NMPC under noisy partial sensing matching the perfect-state baseline, including reconstruction of an unmeasured wheel speed" loading="lazy" width="1680" height="960"></div>
+          <div class="fig-cap" data-cap="0"><b>Same NMPC, same plant.</b> The RTI controller tracks the 0.5 m setpoint faster and every solve lands far inside the 5 ms budget.</div>
+          <div class="fig-cap" data-cap="1" hidden><b>On-target timing.</b> 500 steps at 200 Hz on aarch64. The nominal horizon stays within budget up to about N = 100.</div>
+          <div class="fig-cap" data-cap="2" hidden><b>Partial, noisy sensors.</b> The EKF reconstructs the unmeasured wheel speed and the loop recovers from a tilt-rate impulse at t = 4 s.</div>
+        </div>
+        <a class="video-card" href="https://youtu.be/wMrWURC7zU8">
+          <div class="thumb"><img src="https://i.ytimg.com/vi/wMrWURC7zU8/mqdefault.jpg" alt="" loading="lazy" width="320" height="180"></div>
+          <div><strong>Watch the robot balance</strong><span>Hardware demo on YouTube</span></div>
+        </a>
+      </div>
+    </article>
+
+    <!-- SNNergy -->
+    <article class="project l flip">
+      <div class="rv">
+        <div class="p-meta"><span class="kind">Machine learning · Neuromorphic</span><span>PLRI, MHH Hannover · 2025</span></div>
+        <h3>SNNergy: hierarchical multimodal spiking networks</h3>
+        <p class="sum">Attention-based audio-visual fusion models cross-modal structure well but costs O(N²), which rules out deep multi-scale architectures. Cheaper concatenation misses complementary information. SNNergy removes that trade-off.</p>
+        <ul class="pts">
+          <li>Identified audio-visual learning as an underexplored direction in energy-efficient SNNs and scoped the research problem myself.</li>
+          <li>Designed <b>CMQKA</b>, a bidirectional, symmetric cross-modal Query-Key attention built from binary spike operations, with <b>linear O(N) cost</b> and learnable residual fusion.</li>
+          <li>Built the first hierarchical multi-scale cross-modal fusion framework in spiking computing, over three stages at H/4, H/8, and H/16.</li>
+          <li>State of the art among SNN-based multimodal methods, surpassing several ANN baselines.</li>
+          <li>Proposed an Intel Loihi deployment pathway for real-time edge inference.</li>
+        </ul>
+        <div class="chips"><span class="chip">PyTorch</span><span class="chip">SpikingJelly</span><span class="chip">LIF neurons</span><span class="chip">Surrogate gradients</span><span class="chip">Multimodal fusion</span></div>
+        <div class="links">
+          <a href="https://arxiv.org/abs/2602.00701"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>arXiv:2602.00701</a>
+          <a href="https://github.com/machine-learning101/linear_attention_res_learning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>Code</a>
+        </div>
+      </div>
+      <div class="p-media rv">
+        <div class="results">
+          <h4>Top-1 accuracy · audio-visual benchmarks</h4>
+          <div class="bar-group">
+            <div class="ds"><b>CREMA-D</b><span>+0.83 pts over best SNN</span></div>
+            <div class="bar me"><span class="who">SNNergy</span><span class="track"><span class="fill" style="--w:78.38%"></span></span><span class="v">78.38</span></div>
+            <div class="bar"><span class="who">TAAF-SNNs</span><span class="track"><span class="fill" style="--w:77.55%"></span></span><span class="v">77.55</span></div>
+          </div>
+          <div class="bar-group">
+            <div class="ds"><b>AVE</b><span>+1.49 pts over best SNN</span></div>
+            <div class="bar me"><span class="who">SNNergy</span><span class="track"><span class="fill" style="--w:72.14%"></span></span><span class="v">72.14</span></div>
+            <div class="bar"><span class="who">TAAF-SNNs</span><span class="track"><span class="fill" style="--w:70.65%"></span></span><span class="v">70.65</span></div>
+          </div>
+          <div class="bar-group">
+            <div class="ds"><b>UrbanSound8K-AV</b><span>+1.38 pts over best SNN</span></div>
+            <div class="bar me"><span class="who">SNNergy</span><span class="track"><span class="fill" style="--w:99.66%"></span></span><span class="v">99.66</span></div>
+            <div class="bar"><span class="who">CMCI</span><span class="track"><span class="fill" style="--w:98.28%"></span></span><span class="v">98.28</span></div>
+          </div>
+          <p class="note">Compared with the previous best SNN on each benchmark. On AVE, SNNergy is also 7.47 points above the OGM-GE ANN baseline.</p>
+        </div>
+        <div class="cmqka">
+          <div class="cx"><s>O(N²)</s>O(N)</div>
+          <p>CMQKA aggregates binary spike queries and keys over channels, so cross-modal attention scales linearly with the number of tokens and fusion can happen at every scale.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- FDTD -->
+    <article class="project x">
+      <div class="rv">
+        <div class="p-meta"><span class="kind">Scientific computing</span><span>Computational electromagnetics · 2026</span></div>
+        <h3>FDTD for dispersive, time-varying media</h3>
+        <p class="sum">A 1D finite-difference time-domain solver for Maxwell's equations in a medium that is both dispersive and modulated in time, in the visible regime. Built in stages, each checked against a closed form before the next feature went in.</p>
+        <ul class="pts">
+          <li>Three reproducible verification gates: static slab against the Airy sum (<b>R + T − 1 = 5.8e-14</b>), Drude slab against analytic reflectance, and a temporal boundary against temporal Fresnel coefficients (<b>0.3747 vs. 0.375</b>).</li>
+          <li>A pulse crossing a Drude slab with a modulated plasma frequency splits into a sideband comb at ω₀ + nΩ.</li>
+          <li>Sideband energy follows perturbation theory: fitted exponents <b>1.82, 1.93, 3.86, 3.95</b> against 2 and 4.</li>
+          <li>Measured second-order convergence (order 2.08) and a time step derived from the plasma CFL limit, so no run is unstable by oversight.</li>
+        </ul>
+        <div class="chips"><span class="chip">Python</span><span class="chip">NumPy</span><span class="chip">Yee scheme</span><span class="chip">Drude ADE</span><span class="chip">uv</span></div>
+        <div class="links">
+          <a href="https://github.com/mohamedsaleh365/fdtd-dispersive-time-varying"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>Code</a>
+        </div>
+      </div>
+      <div class="p-media rv">
+        <figure class="figure" style="margin:0">
+          <div class="fig-panel"><img src="assets/img/fdtd-sidebands.png" alt="Main FDTD result: reshaped transmitted pulse, transmitted and reflected spectra showing a sideband comb, energy per sideband, and peak field over time" loading="lazy" width="1860" height="960"></div>
+          <figcaption class="fig-cap"><b>Main result.</b> ω<sub>p</sub> = 0.7 ω₀ modulated at Ω = 0.25 ω₀ with depth m = 0.3. The carrier keeps 60.5% of the transmitted energy and the first sidebands take 17.0% and 19.7%.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <div class="minor-grid">
+      <article class="minor rv" style="--accent: var(--ctl)">
+        <div class="p-meta"><span class="kind" style="color:var(--ctl)">Multi-agent control</span><span>B.Sc. project · 2018</span></div>
+        <h4>Cooperative control of a multi-agent system for Industrial IoRT</h4>
+        <p>Centralized feedback coordination of three autonomous mobile robots in a simulated industrial environment. Graded Distinction and funded by the Academy of Scientific Research and Technology (ASRT).</p>
+        <div class="links"><a href="https://www.researchgate.net/publication/326446132_Cooperative_Control_of_Multi-agent_System_for_Industrial_Internet_of_Robotic_Things" style="--accent: var(--ctl)">Report</a></div>
+      </article>
+      <article class="minor rv">
+        <div class="p-meta"><span class="kind" style="color:var(--ctl)">Data-driven modeling</span><span>Minia University · 2019–2024</span></div>
+        <h4>DMDc surrogate as a digital twin</h4>
+        <p>Dynamic Mode Decomposition with control extracts a linear state-space model directly from robot sensor data. It serves as a digital twin for rapid controller prototyping without re-identification, and was used inside the closed-loop MPC.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="publications">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Publications</div>
+        <h2>Papers</h2>
+      </div>
+      <p>One publication appears under the transliteration Muhammad Hassan, an earlier spelling of my name.</p>
+    </div>
+    <div class="pubs">
+      <article class="pub rv">
+        <div class="yr">2026</div>
+        <div>
+          <p class="pt">Cross-Modal Binary Attention: An Energy-Efficient Fusion Framework for Audio-Visual Learning <span class="badge rev">Under review</span></p>
+          <p class="au"><b>Mohamed Saleh</b>, Zahra Ahmadi</p>
+          <p class="ve">Submitted to Information Fusion (Elsevier)</p>
+          <div class="links"><a href="https://arxiv.org/abs/2602.00701">arXiv</a><a href="https://arxiv.org/pdf/2602.00701">PDF</a></div>
+        </div>
+      </article>
+      <article class="pub rv">
+        <div class="yr">2024</div>
+        <div>
+          <p class="pt">Modeling and Parameters Estimation of a Self-Balancing Two-Wheeled Vehicle <span class="badge pub-ok">Journal</span></p>
+          <p class="au"><b>Muhammad Hassan</b>, Ahmed Mahmoud Moustafa, Mohammed Moness</p>
+          <p class="ve">Journal of Advanced Engineering Trends 43(1), 373–381</p>
+          <div class="links"><a href="https://www.researchgate.net/publication/382022584_Modeling_and_Parameters_Estimation_of_a_Self-Balancing_Two-Wheeled_Vehicle">ResearchGate</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="experience">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Experience and education</div>
+        <h2>Path so far</h2>
+      </div>
+      <p>From Minia, Egypt, where I studied, researched, and taught for five years, to research in Hannover.</p>
+    </div>
+    <div class="two-col">
+      <div class="rv">
+        <p class="col-title">Research and teaching</p>
+        <ol class="timeline">
+          <li style="--dot: var(--lrn)">
+            <span class="when">Apr. 2025 – Oct. 2025 · Hannover, Germany</span>
+            <h4>Research Associate</h4>
+            <p class="org">Peter L. Reichertz Institute for Medical Informatics (PLRI), MHH. Supervised by Dr. Zahra Ahmadi.</p>
+            <ul>
+              <li>Scoped and led the SNNergy project, from problem framing to the CMQKA mechanism.</li>
+              <li>Co-authored the manuscript under review at Information Fusion.</li>
+              <li>Presented at an institute-wide cross-group research exchange.</li>
+            </ul>
+          </li>
+          <li style="--dot: var(--ctl)">
+            <span class="when">Feb. 2019 – Mar. 2024 · Minia, Egypt</span>
+            <h4>Researcher and Teaching Assistant</h4>
+            <p class="org">Faculty of Engineering, Minia University</p>
+            <ul>
+              <li>M.Sc. research on real-time MPC, gray-box identification, and hybrid modeling.</li>
+              <li>Taught Embedded Systems (C/C++) and a Machine Learning elective independently.</li>
+              <li>Assisted in Digital Control Systems, Systems Analysis, and Operations Research.</li>
+              <li>Coached student teams from data preprocessing through embedded deployment.</li>
+            </ul>
+          </li>
+          <li>
+            <span class="when">2017 · Cairo, Egypt</span>
+            <h4>Machine Learning Intern</h4>
+            <p class="org">IBM Egypt</p>
+            <ul><li>Built and deployed a recommendation system with Flask on IBM Developer Cloud.</li></ul>
+          </li>
+        </ol>
+      </div>
+      <div class="rv">
+        <p class="col-title">Education</p>
+        <div class="edu">
+          <div class="edu-card">
+            <span class="when">2024 · Minia University</span>
+            <h4>M.Sc. Electrical Engineering (Computers and Systems)</h4>
+            <p>Thesis: <i>Optimal Hybrid Control for Unstable Robotic Systems</i>. Supervised by Prof. Mohammed Moness and Dr. Ahmed M. Moustafa. English-medium coursework.</p>
+            <span class="hl">Distinction</span>
+          </div>
+          <div class="edu-card">
+            <span class="when">2018 · Minia University</span>
+            <h4>B.Sc. Computer and Systems Engineering</h4>
+            <p>Graduation project on cooperative multi-agent control for Industrial IoRT, graded Distinction.</p>
+            <span class="hl">Distinction with Honors · 89.3% · 1st in class</span>
+          </div>
+        </div>
+        <p class="col-title">Awards</p>
+        <ul class="awards">
+          <li><span class="y">2018</span><span>ASRT research fund for the B.Sc. graduation project on multi-agent robotic control</span></li>
+          <li><span class="y">2018</span><span>Ranked first in class, B.Sc. Computer and Systems Engineering</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="skills">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">Toolkit</div>
+        <h2>Methods and tools</h2>
+      </div>
+      <p>Arabic (native), English (professional and academic), German (learning).</p>
+    </div>
+    <div class="skills">
+      <div class="skill rv" style="--dot: var(--ctl)"><h4><i></i>Control and optimization</h4><div class="chips"><span class="chip">Linear and nonlinear MPC</span><span class="chip">Robust MPC</span><span class="chip">QP</span><span class="chip">LQR / LQG</span><span class="chip">Real-Time Iteration</span><span class="chip">Lyapunov analysis</span></div></div>
+      <div class="skill rv" style="--dot: var(--ctl)"><h4><i></i>Modeling and estimation</h4><div class="chips"><span class="chip">Lagrangian mechanics</span><span class="chip">Gray-box identification</span><span class="chip">Sensitivity analysis</span><span class="chip">EKF / UKF</span><span class="chip">DMDc</span></div></div>
+      <div class="skill rv" style="--dot: var(--lrn)"><h4><i></i>Machine learning</h4><div class="chips"><span class="chip">Spiking neural networks</span><span class="chip">Transformers</span><span class="chip">Attention</span><span class="chip">Multimodal fusion</span><span class="chip">Surrogate-gradient BPTT</span></div></div>
+      <div class="skill rv" style="--dot: #6b5bb5"><h4><i></i>Scientific computing</h4><div class="chips"><span class="chip">Python</span><span class="chip">NumPy / SciPy</span><span class="chip">CasADi</span><span class="chip">acados</span><span class="chip">PyTorch</span><span class="chip">SpikingJelly</span><span class="chip">MATLAB / Simulink</span></div></div>
+      <div class="skill rv" style="--dot: var(--ink-3)"><h4><i></i>Embedded and hardware</h4><div class="chips"><span class="chip">Raspberry Pi</span><span class="chip">Microcontrollers</span><span class="chip">IMU sensor fusion</span><span class="chip">H-bridge motor control</span><span class="chip">Processor-in-the-loop</span></div></div>
+      <div class="skill rv" style="--dot: var(--ink-3)"><h4><i></i>Software</h4><div class="chips"><span class="chip">C / C++</span><span class="chip">Linux</span><span class="chip">Docker</span><span class="chip">Git</span><span class="chip">LaTeX</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="contact">
+  <div class="wrap">
+    <div class="contact rv">
+      <div>
+        <div class="eyebrow" style="color: color-mix(in srgb, var(--bg) 60%, transparent)">Contact</div>
+        <h2 style="margin-top:14px">Let's talk research.</h2>
+        <p>I am looking for funded PhD positions in robotics, optimal control, and machine learning. I am always glad to hear about labs working where control and learning meet. References are available on request.</p>
+      </div>
+      <div class="contact-links">
+        <a href="mailto:mohamed.saleh.de@outlook.com"><span>mohamed.saleh.de@outlook.com</span><span class="k">Email</span></a>
+        <a href="https://github.com/mohamedsaleh365"><span>github.com/mohamedsaleh365</span><span class="k">GitHub</span></a>
+        <a href="https://arxiv.org/abs/2602.00701"><span>arXiv:2602.00701</span><span class="k">Preprint</span></a>
+        <a href="https://github.com/control-systems101"><span>github.com/control-systems101</span><span class="k">Control code</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Mohamed Saleh · Hannover, Germany</span>
+    <span>Hand-written HTML and CSS, hosted on GitHub Pages</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  /* theme toggle */
+  document.getElementById("themeBtn").addEventListener("click", function () {
+    var cur = root.getAttribute("data-theme");
+    if (!cur) cur = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    var next = cur === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  /* nav border and active link */
+  var nav = document.getElementById("nav");
+  var links = Array.prototype.slice.call(document.querySelectorAll(".nav-links a"));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+  function onScroll() {
+    nav.classList.toggle("scrolled", scrollY > 8);
+    var y = scrollY + 120, idx = -1;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) idx = i; });
+    links.forEach(function (a, i) { a.classList.toggle("active", i === idx); });
+  }
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  /* reveal on scroll */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -8% 0px" });
+    document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll(".rv").forEach(function (el) { el.classList.add("in"); });
+  }
+
+  /* figure tabs */
+  document.querySelectorAll("[data-tabs]").forEach(function (box) {
+    var btns = box.querySelectorAll(".fig-tabs button");
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var i = b.getAttribute("data-i");
+        btns.forEach(function (x) { x.setAttribute("aria-selected", x === b ? "true" : "false"); });
+        box.querySelectorAll("[data-p]").forEach(function (p) { p.hidden = p.getAttribute("data-p") !== i; });
+        box.querySelectorAll("[data-cap]").forEach(function (p) { p.hidden = p.getAttribute("data-cap") !== i; });
+      });
+    });
+  });
+
+  /* lightbox */
+  document.querySelectorAll(".fig-panel img").forEach(function (img) {
+    img.addEventListener("click", function () {
+      var lb = document.createElement("div"); lb.className = "lb";
+      var big = document.createElement("img"); big.src = img.src; big.alt = img.alt; lb.appendChild(big);
+      function close() { lb.remove(); removeEventListener("keydown", esc); }
+      function esc(e) { if (e.key === "Escape") close(); }
+      lb.addEventListener("click", close); addEventListener("keydown", esc);
+      document.body.appendChild(lb);
+    });
+  });
+
+  /* hero visualization:
+     top: a stabilized state trace with a receding-horizon prediction ahead of "now"
+     bottom: a population of LIF neurons encoding the same state as spikes */
+  var cv = document.getElementById("viz"), ctx = cv.getContext("2d");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var W = 0, H = 0, dpr = 1;
+  function size() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    var r = cv.getBoundingClientRect(); W = r.width; H = r.height;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  size();
+  if ("ResizeObserver" in window) new ResizeObserver(function () { size(); if (reduce) draw(); }).observe(cv);
+
+  var dt = 1 / 120, wn = 5.2, zeta = 0.32;
+  var x = 0.6, v = 0, t = 0, nextKick = 1.6;
+  var hist = [], spikes = [];
+  var NN = 14, HIST = 4, HOR = 1.6;
+  var neur = []; for (var i = 0; i < NN; i++) neur.push({ c: -1 + 2 * i / (NN - 1), m: 0, ref: 0, a: 0 });
+
+  function step() {
+    var a = -wn * wn * x - 2 * zeta * wn * v;
+    v += a * dt; x += v * dt; t += dt;
+    if (t > nextKick) { v += (Math.random() < .5 ? -1 : 1) * (3.2 + Math.random() * 2.4); nextKick = t + 1.8 + Math.random() * 1.6; }
+    hist.push({ t: t, x: x });
+    while (hist.length && hist[0].t < t - HIST) hist.shift();
+    for (var i = 0; i < NN; i++) {
+      /* adaptive leaky integrate-and-fire with a Gaussian receptive field:
+         adaptation makes the population fire in bursts when the state changes */
+      var n = neur[i], d = x - n.c;
+      n.a -= dt * n.a / 0.4;
+      if (n.ref > 0) { n.ref -= dt; continue; }
+      var I = 1.9 * Math.exp(-(d * d) / (2 * 0.028)) - n.a;
+      n.m += dt * (-n.m / 0.02 + Math.max(0, I) * 33);
+      if (n.m > 1) { n.m = 0; n.ref = 0.012; n.a += 0.25; spikes.push({ t: t, i: i }); }
+    }
+    while (spikes.length && spikes[0].t < t - HIST) spikes.shift();
+  }
+  function predict() {
+    var px = x, pv = v, out = [];
+    for (var s = 0; s <= HOR / dt; s += 1) {
+      var a = -wn * wn * px - 2 * zeta * wn * pv; pv += a * dt; px += pv * dt;
+      if (s % 3 === 0) out.push({ t: t + s * dt, x: px });
+    }
+    return out;
+  }
+  function css(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+
+  function draw() {
+    var ctl = css("--ctl"), lrn = css("--lrn"), ink3 = css("--ink-3"), line = css("--line-2"), surf = css("--surface");
+    ctx.clearRect(0, 0, W, H);
+    var padL = 16, padR = 16, nowX = W * 0.62;
+    var topH = H * 0.56, midY = 18 + (topH - 18) / 2, amp = (topH - 36) / 2 / 1.15;
+    var rasterTop = topH + 18, rasterH = H - rasterTop - 14;
+    var span = HIST, pxPerS = (nowX - padL) / span;
+    function X(tt) { return nowX + (tt - t) * pxPerS; }
+    function Y(xx) { return midY - xx * amp; }
+
+    /* grid */
+    ctx.strokeStyle = line; ctx.lineWidth = 1;
+    for (var g = -1; g <= 1; g += .5) { ctx.beginPath(); ctx.moveTo(padL, Y(g)); ctx.lineTo(W - padR, Y(g)); ctx.stroke(); }
+
+    /* constraint band */
+    ctx.setLineDash([2, 4]); ctx.strokeStyle = lrn; ctx.globalAlpha = .55;
+    [1, -1].forEach(function (b) { ctx.beginPath(); ctx.moveTo(padL, Y(b)); ctx.lineTo(W - padR, Y(b)); ctx.stroke(); });
+    ctx.globalAlpha = 1; ctx.setLineDash([]);
+
+    /* horizon window */
+    var hx1 = nowX, hx2 = Math.min(W - padR, X(t + HOR));
+    ctx.fillStyle = ctl; ctx.globalAlpha = .07; ctx.fillRect(hx1, 10, hx2 - hx1, topH - 14); ctx.globalAlpha = 1;
+    ctx.strokeStyle = ink3; ctx.globalAlpha = .6; ctx.beginPath(); ctx.moveTo(nowX, 10); ctx.lineTo(nowX, H - 10); ctx.stroke(); ctx.globalAlpha = 1;
+
+    ctx.font = "500 10.5px " + css("--mono"); ctx.fillStyle = ink3;
+    ctx.fillText("horizon N", nowX + 6, 24);
+    ctx.fillText("now", nowX + 6, topH - 8);
+    ctx.fillText("constraint", padL + 64, Y(1) - 6);
+
+    /* past trace */
+    ctx.strokeStyle = ctl; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.beginPath();
+    hist.forEach(function (p, k) { var px = X(p.t), py = Y(p.x); if (k) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+    ctx.stroke();
+
+    /* prediction */
+    var pr = predict();
+    ctx.setLineDash([5, 5]); ctx.lineWidth = 1.8; ctx.beginPath();
+    pr.forEach(function (p, k) { var px = X(p.t), py = Y(p.x); if (k) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = ctl;
+    pr.forEach(function (p, k) { if (k % 4 === 0 && k) { ctx.beginPath(); ctx.arc(X(p.t), Y(p.x), 2, 0, 7); ctx.fill(); } });
+    ctx.beginPath(); ctx.arc(nowX, Y(x), 4.5, 0, 7); ctx.fill();
+    ctx.strokeStyle = surf; ctx.lineWidth = 2; ctx.stroke();
+
+    /* raster */
+    ctx.fillStyle = ink3; ctx.fillText("spikes", nowX - 44, rasterTop - 5);
+    var rowH = rasterH / NN;
+    ctx.strokeStyle = line; ctx.lineWidth = 1;
+    for (var r = 0; r < NN; r++) { var yy = rasterTop + r * rowH + rowH / 2; ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(nowX, yy); ctx.stroke(); }
+    ctx.fillStyle = lrn;
+    spikes.forEach(function (s) {
+      var sx = X(s.t); if (sx < padL) return;
+      var age = (t - s.t) / HIST; ctx.globalAlpha = Math.max(.25, 1 - age * .75);
+      var yy = rasterTop + (NN - 1 - s.i) * rowH;
+      ctx.fillRect(sx - 1, yy + rowH * .18, 2, rowH * .64);
+    });
+    ctx.globalAlpha = 1;
+    /* membrane levels at "now" */
+    neur.forEach(function (n, k) {
+      var yy = rasterTop + (NN - 1 - k) * rowH + rowH * .2;
+      ctx.fillStyle = lrn; ctx.globalAlpha = .18 + .6 * Math.min(1, n.m);
+      ctx.fillRect(nowX + 8, yy, 6 + 40 * Math.min(1, n.m), rowH * .6);
+    });
+    ctx.globalAlpha = 1;
+    /* fade the oldest history out to the card background */
+    var fade = ctx.createLinearGradient(0, 0, padL + 56, 0);
+    fade.addColorStop(0, "rgba(0,0,0,1)"); fade.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.globalCompositeOperation = "destination-out"; ctx.fillStyle = fade; ctx.fillRect(0, 0, padL + 56, H);
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  for (var k = 0; k < 600; k++) step();
+  if (reduce) { draw(); return; }
+  var last = performance.now(), acc = 0, running = true;
+  if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { running = es[0].isIntersecting; if (running) { last = performance.now(); requestAnimationFrame(loop); } }).observe(cv);
+  function loop(now) {
+    if (!running) return;
+    acc += Math.min(.1, (now - last) / 1000); last = now;
+    while (acc >= dt) { step(); acc -= dt; }
+    draw(); requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
