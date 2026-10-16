@@ -172,23 +172,6 @@ h1 {
 .viz-cap .c { color: var(--ctl); }
 .viz-cap .l { color: var(--lrn); }
 
-/* stats */
-.stats { border-block: 1px solid var(--line); background: var(--bg-2); }
-.stats .wrap { display: grid; grid-template-columns: repeat(5, 1fr); }
-.stat { padding: 26px 18px 24px; border-left: 1px solid var(--line); }
-.stat:first-child { border-left: 0; padding-left: 0; }
-.stat .n { font: 600 clamp(24px, 2.8vw, 32px)/1 var(--serif); letter-spacing: -.04em; }
-.stat .n small { font-size: .55em; color: var(--ink-3); margin-left: 2px; }
-.stat .t { font-size: 13px; color: var(--ink-2); margin-top: 8px; line-height: 1.45; }
-.stat.c .n { color: var(--ctl); }
-.stat.l .n { color: var(--lrn); }
-@media (max-width: 900px) {
-  .stats .wrap { grid-template-columns: repeat(2, 1fr); }
-  .stat, .stat:first-child { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
-  .stat:nth-child(-n+2) { border-top: 0; }
-  .stat:last-child { grid-column: 1 / -1; }
-}
-
 /* sections */
 section.block { padding-block: clamp(64px, 9vw, 112px); }
 section.block + section.block { border-top: 1px solid var(--line); }
@@ -196,32 +179,6 @@ section.block + section.block { border-top: 1px solid var(--line); }
 @media (max-width: 860px) { .sec-head { grid-template-columns: 1fr; gap: 14px; } }
 h2 { font: 700 clamp(25px, 3.4vw, 38px)/1.12 var(--serif); letter-spacing: -.035em; margin: 14px 0 0; }
 .sec-head p { color: var(--ink-2); margin: 0; max-width: 58ch; }
-
-/* research */
-.pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-@media (max-width: 760px) { .pillars { grid-template-columns: 1fr; } }
-.pillar {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 0; padding: 28px 28px 24px;
-  position: relative; overflow: hidden;
-}
-.pillar::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--accent); }
-.pillar.c { --accent: var(--ctl); --soft: var(--ctl-soft); }
-.pillar.l { --accent: var(--lrn); --soft: var(--lrn-soft); }
-.pillar .tag { font: 500 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-.pillar h3 { font: 600 19px/1.35 var(--serif); letter-spacing: -.02em; margin: 12px 0 10px; }
-.pillar p { color: var(--ink-2); margin: 0 0 16px; }
-.pillar ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.pillar li { display: flex; gap: 10px; font-size: 15px; color: var(--ink-2); }
-.pillar li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: 10px; border-radius: 0; background: var(--accent); }
-.bridge {
-  grid-column: 1 / -1; border-radius: 0; padding: 26px 28px; border: 1px dashed var(--ink-3);
-  display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center;
-  background: linear-gradient(100deg, var(--ctl-soft), transparent 45%, transparent 55%, var(--lrn-soft));
-}
-@media (max-width: 760px) { .bridge { grid-template-columns: 1fr; gap: 12px; } }
-.bridge .sym { font: 400 40px/1 var(--serif); color: var(--ink); }
-.bridge h3 { font: 600 17px/1.35 var(--serif); margin: 0 0 6px; letter-spacing: -.01em; }
-.bridge p { margin: 0; color: var(--ink-2); }
 
 /* projects */
 .project {
@@ -305,15 +262,11 @@ h2 { font: 700 clamp(25px, 3.4vw, 38px)/1.12 var(--serif); letter-spacing: -.035
 .bar .v { font: 500 12.5px/1 var(--mono); text-align: right; }
 .bar.me .v { color: var(--lrn); }
 .results .note { font-size: 12.5px; color: var(--ink-3); margin: 6px 0 0; border-top: 1px solid var(--line-2); padding-top: 12px; line-height: 1.55; }
-.cmqka {
   margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 0; padding: 16px 18px;
   display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center;
 }
-.cmqka .cx { font: 500 22px/1 var(--mono); color: var(--lrn); white-space: nowrap; }
-.cmqka .cx s { color: var(--ink-3); text-decoration-thickness: 1.5px; font-weight: 400; margin-right: 8px; }
-.cmqka p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
 
-.minor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 12px; }
+.minor-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-top: 12px; }
 @media (max-width: 760px) { .minor-grid { grid-template-columns: 1fr; } }
 .minor { background: var(--surface); border: 1px solid var(--line); border-radius: 0; padding: 24px; }
 .minor h4 { font: 600 16.5px/1.35 var(--serif); margin: 10px 0 8px; letter-spacing: -.01em; }
@@ -402,8 +355,8 @@ footer { padding-block: 32px 44px; color: var(--ink-3); font-size: 13px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 /* justified prose, as in LaTeX */
-.lede, .sec-head p, .pillar p, .bridge p, .project .sum, .project ul.pts li, .minor p,
-.timeline ul li, .edu-card p, .contact p, .fig-cap, .results .note, .cmqka p {
+.lede, .sec-head p, .project .sum, .project ul.pts li, .minor p,
+.timeline ul li, .edu-card p, .contact p, .fig-cap, .results .note {
   text-align: justify; hyphens: auto; -webkit-hyphens: auto; text-justify: inter-word;
   letter-spacing: -.02em; word-spacing: -.04em;
 }
@@ -429,7 +382,6 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
   <div class="wrap">
     <a class="brand" href="#top"><span class="brand-mark">MS</span>Mohamed Saleh</a>
     <div class="nav-links">
-      <a href="#research">Research</a>
       <a href="#projects" class="keep">Projects</a>
       <a href="#publications">Publications</a>
       <a href="#experience">Experience</a>
@@ -448,7 +400,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
       <span class="status"><span class="dot"></span>Open to funded PhD positions</span>
       <h1>Mohamed Saleh</h1>
       <p class="hero-role">Researcher in <span class="c">predictive control</span> and <span class="l">spiking neural networks</span>. Hannover, Germany.</p>
-      <p class="lede">I am a researcher working at the intersection of control systems and machine learning, two disciplines I have pursued separately and am now driven to unify. My work spans real-time model predictive control for unstable robotic systems and energy-efficient spiking architectures for multimodal perception, giving me a dual fluency in optimization-grounded control theory and modern deep learning. I am drawn to new challenges and new domains, with research interests in power systems, robotics, and renewable energy.</p>
+      <p class="lede">I am a researcher working at the intersection of <b>control systems and machine learning</b>. My work spans real-time Model Predictive Control and energy-efficient spiking neural networks, applied to unstable robotic systems and multimodal perception. I am drawn to new challenges across domains, with a research interest centered on <b>optimal and learning-based control</b>, safe control and verification, data-driven modeling, and efficient machine learning.</p>
       <div class="btns">
         <a class="btn primary" href="mailto:mohamed.saleh@mail.de">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>Get in touch</a>
@@ -469,68 +421,14 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
   </div>
 </header>
 
-<div class="stats">
-  <div class="wrap">
-    <div class="stat c rv"><div class="n">143<small>×</small></div><div class="t">speedup of acados RTI over offline IPOPT on the same NMPC</div></div>
-    <div class="stat c rv"><div class="n">0.88<small>ms</small></div><div class="t">mean NMPC solve time per control step</div></div>
-    <div class="stat c rv"><div class="n">200<small>Hz</small></div><div class="t">closed-loop rate on a Raspberry Pi 4, inside a 5 ms budget</div></div>
-    <div class="stat l rv"><div class="n">O(N)</div><div class="t">cross-modal attention in CMQKA, down from O(N²)</div></div>
-    <div class="stat l rv"><div class="n">78.38<small>%</small></div><div class="t">CREMA-D accuracy, state of the art among SNNs</div></div>
-  </div>
-</div>
-
 <main>
-
-<section class="block" id="research">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div>
-        <div class="eyebrow">Research</div>
-        <h2>Two disciplines, one question.</h2>
-      </div>
-      <p>How can a system act optimally under hard real-time and energy limits? Predictive control answers with models and constraints. Spiking networks answer with sparse, event-driven computation. I work on both, and on what happens when they meet.</p>
-    </div>
-
-    <div class="pillars">
-      <article class="pillar c rv">
-        <div class="tag">Control anchor</div>
-        <h3>Real-time predictive control for unstable robots</h3>
-        <p>End-to-end nonlinear MPC, from physics-based modeling to a solver that closes the loop on embedded hardware.</p>
-        <ul>
-          <li>Lagrangian gray-box modeling and multiple-shooting system identification</li>
-          <li>Direct multiple shooting NMPC with soft safety constraints</li>
-          <li>acados Real-Time Iteration with HPIPM, benchmarked on ARM</li>
-          <li>EKF output feedback and DMDc data-driven surrogates</li>
-        </ul>
-      </article>
-      <article class="pillar l rv">
-        <div class="tag">Learning anchor</div>
-        <h3>Energy-efficient spiking networks for multimodal perception</h3>
-        <p>Attention-based fusion that stays linear in cost, so spiking networks can go deep and hierarchical across modalities.</p>
-        <ul>
-          <li>Binary cross-modal Query-Key attention (CMQKA)</li>
-          <li>Hierarchical multi-scale audio-visual fusion</li>
-          <li>LIF neurons trained with surrogate-gradient BPTT</li>
-          <li>Neuromorphic deployment pathways (Intel Loihi)</li>
-        </ul>
-      </article>
-      <div class="bridge rv">
-        <div class="sym">⇄</div>
-        <div>
-          <h3>Where they meet</h3>
-          <p>Integrating predictive control with learned representations: learned and data-driven models inside optimal controllers, and efficient learning that respects real-time budgets. I want to take this toward power systems, robotics, and renewable energy.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="block" id="projects">
   <div class="wrap">
     <div class="sec-head rv">
       <div>
         <div class="eyebrow">Selected projects</div>
-        <h2>Built from scratch, measured honestly.</h2>
+        <h2>Key academic projects</h2>
       </div>
       <p>Each project runs from first principles to a verified result, with the numbers reproducible from the code.</p>
     </div>
@@ -538,18 +436,14 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
     <!-- NMPC -->
     <article class="project c">
       <div class="rv">
-        <div class="p-meta"><span class="kind">Control · Robotics</span><span>M.Sc. thesis and extension · 2024–2025</span></div>
-        <h3>Nonlinear MPC for a two-wheeled self-balancing robot</h3>
-        <p class="sum">A complete control stack for an unstable inverted pendulum on wheels, rebuilt end to end in Python: identify the plant, design the controller, make it fast enough for an embedded 200 Hz loop, and close the loop under noisy, partial sensing.</p>
+        <div class="p-meta"><span class="kind">Control · Robotics</span><span>M.Sc. thesis and embedded timing study · 2024–2026</span></div>
+        <h3>Embedded real-time nonlinear Model Predictive Control of an unstable robot</h3>
+        <p class="sum">Constrained nonlinear MPC for a two-wheeled self-balancing robot, running in real time on embedded hardware.</p>
         <ul class="pts">
-          <li>8-state symbolic CasADi model with DC-motor dynamics, identified by multiple-shooting prediction-error optimization to <b>88–91% tilt-prediction fit</b> on held-out data.</li>
-          <li>Corrected a spurious stable tilt mode that closed-loop identification had introduced in the thesis model.</li>
-          <li>acados RTI with HPIPM reaches a <b>143× speedup</b> over offline IPOPT (0.88 ms vs. 125 ms) with the same closed-loop behavior.</li>
-          <li>Raspberry Pi 4 benchmark at 200 Hz: <b>mean 2.58 ms, p99 3.12 ms</b>, across horizon, condensing, iteration, and integrator sweeps.</li>
-          <li>EKF output feedback with exact CasADi Jacobians matches full-state feedback for about <b>9% extra compute</b>.</li>
-          <li>The original M.Sc. thesis deployed constrained linear MPC (QP) from MATLAB/Simulink on the physical robot, with validated Sim2Real transfer.</li>
+          <li>acados Real-Time Iteration: <b>143× faster</b> than offline IPOPT (0.88 ms vs. 125 ms) with the same closed-loop performance.</li>
+          <li>Runs at 200 Hz on a Raspberry Pi within a 5 ms budget: <b>mean 2.58 ms, p99 3.12 ms</b>.</li>
+          <li>Lagrangian model identified from sensor data (<b>88–91% fit</b> on held-out experiments), with an Extended Kalman Filter closing the loop.</li>
         </ul>
-        <div class="chips"><span class="chip">CasADi</span><span class="chip">acados</span><span class="chip">HPIPM</span><span class="chip">IPOPT</span><span class="chip">EKF</span><span class="chip">DMDc</span><span class="chip">MATLAB/Simulink</span><span class="chip">Raspberry Pi</span></div>
         <div class="links">
           <a href="https://github.com/mohamedsaleh365/nmpc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>Code</a>
           <a href="https://muedueg-my.sharepoint.com/:b:/g/personal/muhammad_essam_mu_edu_eg/ESSOphQX2ApEn1N4oOotgKABKByLNAQNmWKk8xV2fbcv7g?e=0YFazy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-1.5zM4 19.5A2 2 0 0 1 6 18h12"/></svg>M.Sc. thesis</a>
@@ -559,14 +453,14 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
         <div class="figure" data-tabs>
           <div class="fig-tabs" role="tablist">
             <button role="tab" aria-selected="true" data-i="0">acados vs. IPOPT</button>
-            <button role="tab" aria-selected="false" data-i="1">Pi 4 timing</button>
+            <button role="tab" aria-selected="false" data-i="1">Pi timing</button>
             <button role="tab" aria-selected="false" data-i="2">EKF output feedback</button>
           </div>
           <div class="fig-panel" data-p="0"><img src="assets/img/nmpc-acados-vs-ipopt.png" alt="Tilt, position, and input trajectories for acados RTI versus IPOPT, plus a histogram of RTI solve times centered at 0.88 ms against a 5 ms budget" loading="lazy" width="1560" height="960"></div>
           <div class="fig-panel" data-p="1" hidden><img src="assets/img/nmpc-pi-timing.png" alt="Six-panel timing study on a Raspberry Pi: horizon sweep, solve-time distribution at N=80, RTI phase split, QP condensing, RTI iterations, and integrator steps" loading="lazy" width="1920" height="1080"></div>
           <div class="fig-panel" data-p="2" hidden><img src="assets/img/nmpc-ekf.png" alt="EKF output-feedback NMPC under noisy partial sensing matching the perfect-state baseline, including reconstruction of an unmeasured wheel speed" loading="lazy" width="1680" height="960"></div>
           <div class="fig-cap" data-cap="0"><b>Same NMPC, same plant.</b> The RTI controller tracks the 0.5 m setpoint faster and every solve lands far inside the 5 ms budget.</div>
-          <div class="fig-cap" data-cap="1" hidden><b>On-target timing.</b> 500 steps at 200 Hz on aarch64. The nominal horizon stays within budget up to about N = 100.</div>
+          <div class="fig-cap" data-cap="1" hidden><b>On-target timing.</b> 500 steps at 200 Hz on a Raspberry Pi. The nominal horizon stays within budget up to about N = 100.</div>
           <div class="fig-cap" data-cap="2" hidden><b>Partial, noisy sensors.</b> The EKF reconstructs the unmeasured wheel speed and the loop recovers from a tilt-rate impulse at t = 4 s.</div>
         </div>
         <a class="video-card" href="https://youtu.be/wMrWURC7zU8">
@@ -580,16 +474,13 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
     <article class="project l flip">
       <div class="rv">
         <div class="p-meta"><span class="kind">Machine learning · Neuromorphic</span><span>PLRI, MHH Hannover · 2025</span></div>
-        <h3>SNNergy: hierarchical multimodal spiking networks</h3>
-        <p class="sum">Attention-based audio-visual fusion models cross-modal structure well but costs O(N²), which rules out deep multi-scale architectures. Cheaper concatenation misses complementary information. SNNergy removes that trade-off.</p>
+        <h3>SNNergy: energy-efficient deep spiking neural network for multimodal audio-visual learning</h3>
+        <p class="sum">An energy-efficient spiking network that fuses audio and video at every scale.</p>
         <ul class="pts">
-          <li>Identified audio-visual learning as an underexplored direction in energy-efficient SNNs and scoped the research problem myself.</li>
-          <li>Designed <b>CMQKA</b>, a bidirectional, symmetric cross-modal Query-Key attention built from binary spike operations, with <b>linear O(N) cost</b> and learnable residual fusion.</li>
-          <li>Built the first hierarchical multi-scale cross-modal fusion framework in spiking computing, over three stages at H/4, H/8, and H/16.</li>
-          <li>State of the art among SNN-based multimodal methods, surpassing several ANN baselines.</li>
-          <li>Proposed an Intel Loihi deployment pathway for real-time edge inference.</li>
+          <li><b>CMQKA</b> cross-modal attention built from binary spikes, linear O(N) instead of quadratic O(N²).</li>
+          <li>First hierarchical multi-scale cross-modal fusion network in spiking computing.</li>
+          <li>State-of-the-art accuracy among multimodal SNNs at an estimated energy below the ANN baselines.</li>
         </ul>
-        <div class="chips"><span class="chip">PyTorch</span><span class="chip">SpikingJelly</span><span class="chip">LIF neurons</span><span class="chip">Surrogate gradients</span><span class="chip">Multimodal fusion</span></div>
         <div class="links">
           <a href="https://arxiv.org/abs/2602.00701"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>arXiv:2602.00701</a>
           <a href="https://github.com/mohamedsaleh365/SNNergy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>Code</a>
@@ -613,11 +504,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
             <div class="bar me"><span class="who">SNNergy</span><span class="track"><span class="fill" style="--w:99.66%"></span></span><span class="v">99.66</span></div>
             <div class="bar"><span class="who">CMCI</span><span class="track"><span class="fill" style="--w:98.28%"></span></span><span class="v">98.28</span></div>
           </div>
-          <p class="note">Compared with the previous best SNN on each benchmark. On AVE, SNNergy is also 7.47 points above the OGM-GE ANN baseline.</p>
-        </div>
-        <div class="cmqka">
-          <div class="cx"><s>O(N²)</s>O(N)</div>
-          <p>CMQKA aggregates binary spike queries and keys over channels, so cross-modal attention scales linearly with the number of tokens and fusion can happen at every scale.</p>
+          <p class="note">Compared with the previous best SNN on each benchmark.</p>
         </div>
       </div>
     </article>
@@ -626,15 +513,13 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
     <article class="project x">
       <div class="rv">
         <div class="p-meta"><span class="kind">Scientific computing</span><span>Computational electromagnetics · 2026</span></div>
-        <h3>FDTD for dispersive, time-varying media</h3>
-        <p class="sum">A 1D finite-difference time-domain solver for Maxwell's equations in a medium that is both dispersive and modulated in time, in the visible regime. Built in stages, each checked against a closed form before the next feature went in.</p>
+        <h3>FDTD solver for dispersive, time-varying media</h3>
+        <p class="sum">A 1D solver for Maxwell's equations in a medium that is both dispersive and modulated in time.</p>
         <ul class="pts">
-          <li>Three reproducible verification gates: static slab against the Airy sum (<b>R + T − 1 = 5.8e-14</b>), Drude slab against analytic reflectance, and a temporal boundary against temporal Fresnel coefficients (<b>0.3747 vs. 0.375</b>).</li>
-          <li>A pulse crossing a Drude slab with a modulated plasma frequency splits into a sideband comb at ω₀ + nΩ.</li>
-          <li>Sideband energy follows perturbation theory: fitted exponents <b>1.82, 1.93, 3.86, 3.95</b> against 2 and 4.</li>
-          <li>Measured second-order convergence (order 2.08) and a time step derived from the plasma CFL limit, so no run is unstable by oversight.</li>
+          <li>Yee-scheme solver with a Drude dispersion model, built from scratch.</li>
+          <li>Each stage verified against a closed-form reference: the Airy sum, Drude reflectance, and temporal Fresnel coefficients.</li>
+          <li>Resolves the sideband comb of a pulse crossing a modulated medium, with measured second-order convergence.</li>
         </ul>
-        <div class="chips"><span class="chip">Python</span><span class="chip">NumPy</span><span class="chip">Yee scheme</span><span class="chip">Drude ADE</span><span class="chip">uv</span></div>
         <div class="links">
           <a href="https://github.com/mohamedsaleh365/fdtd-dispersive-time-varying"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5"/></svg>Code</a>
         </div>
@@ -651,13 +536,8 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
       <article class="minor rv" style="--accent: var(--ctl)">
         <div class="p-meta"><span class="kind" style="color:var(--ctl)">Multi-agent control</span><span>B.Sc. project · 2018</span></div>
         <h4>Cooperative control of a multi-agent system for Industrial IoRT</h4>
-        <p>Centralized feedback coordination of three autonomous mobile robots in a simulated industrial environment. Graded Distinction and funded by the Academy of Scientific Research and Technology (ASRT).</p>
+        <p>Centralized feedback control of three mobile robots in simulation. B.Sc. project, Distinction, funded by ASRT.</p>
         <div class="links"><a href="https://www.researchgate.net/publication/326446132_Cooperative_Control_of_Multi-agent_System_for_Industrial_Internet_of_Robotic_Things" style="--accent: var(--ctl)">Report</a></div>
-      </article>
-      <article class="minor rv">
-        <div class="p-meta"><span class="kind" style="color:var(--ctl)">Data-driven modeling</span><span>Minia University · 2019–2024</span></div>
-        <h4>DMDc surrogate as a digital twin</h4>
-        <p>Dynamic Mode Decomposition with control extracts a linear state-space model directly from robot sensor data. It serves as a digital twin for rapid controller prototyping without re-identification, and was used inside the closed-loop MPC.</p>
       </article>
     </div>
   </div>
@@ -713,9 +593,9 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
             <h4>Research Associate</h4>
             <p class="org">Peter L. Reichertz Institute for Medical Informatics (PLRI), MHH. Supervised by Dr. Zahra Ahmadi.</p>
             <ul>
-              <li>Scoped and led the SNNergy project, from problem framing to the CMQKA mechanism.</li>
-              <li>Co-authored the manuscript under review at Information Fusion.</li>
-              <li>Presented at an institute-wide cross-group research exchange.</li>
+              <li>Identified multimodal audio-visual learning as an underexplored direction within energy-efficient spiking neural networks and independently scoped the research problem that became the SNNergy project.</li>
+              <li>Conducted a comprehensive literature review spanning spiking transformers, multimodal fusion strategies, and neuromorphic computing.</li>
+              <li>Co-authored the manuscript, under review at Information Fusion, and presented the work at an institute-wide research exchange.</li>
             </ul>
           </li>
           <li style="--dot: var(--ctl)">
@@ -723,15 +603,15 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
             <h4>Researcher and Teaching Assistant</h4>
             <p class="org">Faculty of Engineering, Minia University</p>
             <ul>
-              <li>M.Sc. research on real-time MPC, gray-box identification, and hybrid modeling.</li>
-              <li>Taught Embedded Systems (C/C++) and a Machine Learning elective independently.</li>
-              <li>Assisted in Digital Control Systems, Systems Analysis, and Operations Research.</li>
-              <li>Coached student teams from data preprocessing through embedded deployment.</li>
+              <li>Conducted M.Sc. research on real-time MPC, gray-box system identification, and hybrid modeling of an unstable wheeled robot, from embedded implementation on hardware to experimental validation.</li>
+              <li>Independently taught Embedded Systems (C/C++) and a Machine Learning elective, and assisted senior faculty in Digital Control Systems, Systems Analysis, and Operations Research (LP/MILP).</li>
+              <li>Mentored student teams from data preprocessing to embedded deployment.</li>
+              <li>Took on departmental responsibilities alongside teaching, including department meetings, lab administration, and exam supervision.</li>
             </ul>
           </li>
           <li>
             <span class="when">2017 · Cairo, Egypt</span>
-            <h4>Machine Learning Intern</h4>
+            <h4>Machine Learning Internship</h4>
             <p class="org">IBM Egypt</p>
             <ul><li>Built and deployed a recommendation system with Flask on IBM Developer Cloud.</li></ul>
           </li>
@@ -743,14 +623,13 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
           <div class="edu-card">
             <span class="when">2024 · Minia University</span>
             <h4>M.Sc. Electrical Engineering (Computers and Systems)</h4>
-            <p>Thesis: <i>Optimal Hybrid Control for Unstable Robotic Systems</i>. Supervised by Prof. Mohammed Moness and Dr. Ahmed M. Moustafa. English-medium coursework.</p>
-            <span class="hl">Distinction</span>
+            <p>Thesis: <i>Optimal Hybrid Control for Unstable Robotic Systems</i>. Supervised by Prof. Mohammed Moness and Dr. Ahmed M. Moustafa. Graded coursework: Distinction in Systems Engineering, Advanced Programming, and Hybrid Dynamical Systems.</p>
           </div>
           <div class="edu-card">
             <span class="when">2018 · Minia University</span>
             <h4>B.Sc. Computer and Systems Engineering</h4>
             <p>Graduation project on cooperative multi-agent control for Industrial IoRT, graded Distinction.</p>
-            <span class="hl">Distinction with Honors · 89.3% · 1st in class</span>
+            <span class="hl">Distinction with Honors · Ranked 1st in class</span>
           </div>
         </div>
         <p class="col-title">Awards</p>
@@ -770,15 +649,14 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
         <div class="eyebrow">Toolkit</div>
         <h2>Methods and tools</h2>
       </div>
-      <p>Arabic (native), English (professional and academic), German (learning).</p>
+      <p>English: fluent and professional, written and spoken. German: beginner level (A1).</p>
     </div>
     <div class="skills">
-      <div class="skill rv" style="--dot: var(--ctl)"><h4><i></i>Control and optimization</h4><div class="chips"><span class="chip">Linear and nonlinear MPC</span><span class="chip">Robust MPC</span><span class="chip">QP</span><span class="chip">LQR / LQG</span><span class="chip">Real-Time Iteration</span><span class="chip">Lyapunov analysis</span></div></div>
-      <div class="skill rv" style="--dot: var(--ctl)"><h4><i></i>Modeling and estimation</h4><div class="chips"><span class="chip">Lagrangian mechanics</span><span class="chip">Gray-box identification</span><span class="chip">Sensitivity analysis</span><span class="chip">EKF / UKF</span><span class="chip">DMDc</span></div></div>
-      <div class="skill rv" style="--dot: var(--lrn)"><h4><i></i>Machine learning</h4><div class="chips"><span class="chip">Spiking neural networks</span><span class="chip">Transformers</span><span class="chip">Attention</span><span class="chip">Multimodal fusion</span><span class="chip">Surrogate-gradient BPTT</span></div></div>
-      <div class="skill rv" style="--dot: #6b5bb5"><h4><i></i>Scientific computing</h4><div class="chips"><span class="chip">Python</span><span class="chip">NumPy / SciPy</span><span class="chip">CasADi</span><span class="chip">acados</span><span class="chip">PyTorch</span><span class="chip">SpikingJelly</span><span class="chip">MATLAB / Simulink</span></div></div>
-      <div class="skill rv" style="--dot: var(--ink-3)"><h4><i></i>Embedded and hardware</h4><div class="chips"><span class="chip">Raspberry Pi</span><span class="chip">Microcontrollers</span><span class="chip">IMU sensor fusion</span><span class="chip">H-bridge motor control</span><span class="chip">Processor-in-the-loop</span></div></div>
-      <div class="skill rv" style="--dot: var(--ink-3)"><h4><i></i>Software</h4><div class="chips"><span class="chip">C / C++</span><span class="chip">Linux</span><span class="chip">Docker</span><span class="chip">Git</span><span class="chip">LaTeX</span></div></div>
+      <div class="skill rv" style="--dot: var(--ctl)"><h4><i></i>Control and optimization</h4><div class="chips"><span class="chip">Linear and nonlinear MPC</span><span class="chip">Robust MPC</span><span class="chip">QP</span><span class="chip">CasADi</span><span class="chip">acados (RTI/SQP)</span><span class="chip">HPIPM</span><span class="chip">IPOPT</span><span class="chip">LQR / LQG</span><span class="chip">EKF / UKF</span><span class="chip">Lyapunov analysis</span></div></div>
+      <div class="skill rv" style="--dot: var(--ctl)"><h4><i></i>Modeling and system identification</h4><div class="chips"><span class="chip">Lagrangian modeling</span><span class="chip">Gray-box identification</span><span class="chip">DMDc</span><span class="chip">Sensitivity analysis</span><span class="chip">State-space modeling</span></div></div>
+      <div class="skill rv" style="--dot: var(--lrn)"><h4><i></i>Machine learning</h4><div class="chips"><span class="chip">Deep learning</span><span class="chip">Spiking neural networks</span><span class="chip">Transformers</span><span class="chip">Multimodal fusion</span><span class="chip">Surrogate-gradient training</span><span class="chip">GPU-cluster training</span></div></div>
+      <div class="skill rv" style="--dot: var(--ink-3)"><h4><i></i>Embedded and real-time systems</h4><div class="chips"><span class="chip">Raspberry Pi</span><span class="chip">Arduino</span><span class="chip">Microcontrollers</span><span class="chip">IMU sensor fusion</span><span class="chip">H-bridge motor control</span><span class="chip">Processor-in-the-loop</span></div></div>
+      <div class="skill rv" style="--dot: #6b5bb5"><h4><i></i>Programming and tools</h4><div class="chips"><span class="chip">Python (NumPy, SciPy, PyTorch)</span><span class="chip">SpikingJelly</span><span class="chip">C / C++</span><span class="chip">MATLAB / Simulink</span><span class="chip">Bash</span><span class="chip">Git</span><span class="chip">Linux</span><span class="chip">Docker</span><span class="chip">LaTeX</span></div></div>
     </div>
   </div>
 </section>
@@ -789,7 +667,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wr
       <div>
         <div class="eyebrow" style="color: color-mix(in srgb, var(--bg) 60%, transparent)">Contact</div>
         <h2 style="margin-top:14px">Let's talk research.</h2>
-        <p>I am looking for funded PhD positions in robotics, optimal control, and machine learning. I am always glad to hear about labs working where control and learning meet. References are available on request.</p>
+        <p>I am looking for funded PhD positions in robotics, optimal control, and machine learning. References are available on request.</p>
       </div>
       <div class="contact-links">
         <a href="mailto:mohamed.saleh@mail.de"><span>mohamed.saleh@mail.de</span><span class="k">Email</span></a>
